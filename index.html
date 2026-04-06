@@ -19,7 +19,6 @@
   <button onclick="validate()">Verify</button>
 </div>
 <div id="message"></div>
-
 <script>
 var API_URL = "https://script.google.com/macros/s/AKfycbzE_VL2m7e9Aw-0wnSsX1cRlxq87fuo-TnSzNQdsGfiDWKnf1-CnpJhR7TD2HfpeBeD-w/exec";
 var emailInput = document.getElementById("email");
@@ -41,21 +40,27 @@ function validate() {
     return;
   }
   msg.innerHTML = '<span class="checking">Checking...</span>';
-  fetch(API_URL + "?email=" + encodeURIComponent(email))
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.found) {
-        msg.innerHTML = '<span class="success">Email verified.</span>';
-        JFCustomWidget.sendData({ valid: true, value: email });
-      } else {
-        msg.innerHTML = '<span class="error">This email is not registered. <a href="https://allorausa.com/pages/registration" target="_blank">Register here</a>.</span>';
-        JFCustomWidget.sendData({ valid: false, value: "" });
-      }
-    })
-    .catch(function() {
-      msg.innerHTML = '<span class="error">Unable to verify. Please try again.</span>';
+
+  var callbackName = "cb_" + Date.now();
+  window[callbackName] = function(data) {
+    if (data.found) {
+      msg.innerHTML = '<span class="success">Email verified.</span>';
+      JFCustomWidget.sendData({ valid: true, value: email });
+    } else {
+      msg.innerHTML = '<span class="error">This email is not registered. <a href="https://allorausa.com/pages/registration" target="_blank">Register here</a>.</span>';
       JFCustomWidget.sendData({ valid: false, value: "" });
-    });
+    }
+    document.body.removeChild(script);
+    delete window[callbackName];
+  };
+
+  var script = document.createElement("script");
+  script.src = API_URL + "?email=" + encodeURIComponent(email) + "&callback=" + callbackName;
+  script.onerror = function() {
+    msg.innerHTML = '<span class="error">Unable to verify. Please try again.</span>';
+    JFCustomWidget.sendData({ valid: false, value: "" });
+  };
+  document.body.appendChild(script);
 }
 </script>
 </body>
