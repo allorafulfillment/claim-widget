@@ -3,16 +3,21 @@
 <head>
 <script src="https://cdn.jotfor.ms/s/umd/latest/for-widgets-embed.js"></script>
 <style>
-  body { font-family: Arial, sans-serif; margin: 10px; }
-  input { width: 100%; padding: 8px; font-size: 14px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+  body { font-family: Arial, sans-serif; margin: 5px; }
+  input { width: 80%; padding: 8px; font-size: 14px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+  button { padding: 8px 12px; font-size: 14px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #f0f0f0; }
   .error { color: red; margin-top: 5px; font-size: 13px; }
   .success { color: green; margin-top: 5px; font-size: 13px; }
   .checking { color: #666; margin-top: 5px; font-size: 13px; }
   a { color: #1a73e8; }
+  .row { display: flex; gap: 5px; }
 </style>
 </head>
 <body>
-<input type="email" id="email" placeholder="Enter your registered email" />
+<div class="row">
+  <input type="email" id="email" placeholder="Enter your registered email" />
+  <button onclick="validate()">Verify</button>
+</div>
 <div id="message"></div>
 
 <script>
@@ -22,13 +27,16 @@ var msg = document.getElementById("message");
 
 JFCustomWidget.subscribe("ready", function() {
   JFCustomWidget.sendData({ valid: false, value: "" });
-  emailInput.addEventListener("blur", validate);
+});
+
+emailInput.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); validate(); }
 });
 
 function validate() {
   var email = emailInput.value.trim();
   if (!email) {
-    msg.innerHTML = "";
+    msg.innerHTML = '<span class="error">Please enter an email.</span>';
     JFCustomWidget.sendData({ valid: false, value: "" });
     return;
   }
@@ -52,3 +60,4 @@ function validate() {
 </script>
 </body>
 </html>
+
