@@ -28,6 +28,15 @@ JFCustomWidget.subscribe("ready", function() {
   JFCustomWidget.sendData({ valid: false, value: "" });
 });
 
+JFCustomWidget.subscribe("submit", function() {
+  var email = emailInput.value.trim();
+  if (email && msg.innerHTML.indexOf("verified") > -1) {
+    JFCustomWidget.sendSubmit({ valid: true, value: email });
+  } else {
+    JFCustomWidget.sendSubmit({ valid: false, value: "" });
+  }
+});
+  
 emailInput.addEventListener("keydown", function(e) {
   if (e.key === "Enter") { e.preventDefault(); validate(); }
 });
